@@ -1,296 +1,299 @@
-# System Architecture: LabMate AI – AI Engineering Lab Assistant Chatbot
+# Implementation Plan
 
-This document describes the architectural design and system components of **LabMate AI**. It explains the major system modules, data flow, APIs, database design, security considerations, and future scalability.
-
----
-
-# System Overview
-
-LabMate AI is a web-based AI engineering laboratory assistant designed to help students during laboratory experiments. The system provides a chatbot interface for answering experiment-related questions, analyzing experimental data, generating graphs, and producing observations and conclusions.
-
-The application follows a **client-server architecture** where the React frontend communicates with the FastAPI backend. The backend interacts with the Gemini API, ChromaDB, data analysis modules, and the SQLite database.
+This document outlines the implementation plan for **LabMate AI – AI Engineering Lab Assistant Chatbot**, a final-year engineering project designed to assist students in laboratory experiments through AI-based chat, data analysis, and visualization.
 
 ---
 
-# High-Level Architecture
+# Project Title
 
-```text
-                +----------------------+
-                |       Student        |
-                +----------+-----------+
-                           |
-                           v
-                +----------------------+
-                |   React Frontend     |
-                |   (User Interface)   |
-                +----------+-----------+
-                           |
-                    HTTP Requests
-                           |
-                           v
-                +----------------------+
-                |    FastAPI Backend   |
-                +----------+-----------+
-                           |
-        +------------------+------------------+
-        |                  |                  |
-        v                  v                  v
-+---------------+ +---------------+ +---------------+
-| Gemini API    | | ChromaDB      | | Pandas/NumPy |
-+---------------+ +---------------+ +---------------+
-                           |
-                           v
-                   +---------------+
-                   | Matplotlib    |
-                   +---------------+
-                           |
-                           v
-                   +---------------+
-                   | SQLite        |
-                   +---------------+
+**LabMate AI – AI Engineering Lab Assistant Chatbot**
+
+---
+
+# Technology Stack
+
+## Frontend
+- React.js
+- HTML5
+- CSS3
+- JavaScript
+
+## Backend
+- FastAPI
+- Uvicorn
+
+## AI Integration
+- Google Gemini API
+
+## RAG System
+- ChromaDB (Vector Database)
+
+## Database
+- SQLite
+- SQLModel (ORM)
+
+## Data Processing
+- Pandas
+- NumPy
+
+## Visualization
+- Matplotlib
+
+## Excel Support
+- OpenPyXL
+
+## Version Control
+- Git
+- GitHub
+
+---
+
+# Project Folder Structure
+
+```
+LabMateAI/
+│
+├── backend/
+│   ├── app/
+│   │   ├── api/
+│   │   ├── services/
+│   │   │   ├── gemini.py
+│   │   │   ├── rag.py
+│   │   │   ├── analyzer.py
+│   │   │   └── plotter.py
+│   │   ├── models/
+│   │   ├── database/
+│   │   └── main.py
+│
+├── frontend/
+│   ├── src/
+│   ├── public/
+│   └── App.jsx
+│
+├── docs/
+│   ├── problem.md
+│   ├── requirements.md
+│   ├── system_architecture.md
+│   └── implementation_plan.md
+│
+└── README.md
+
+.gitignore
 ```
 
 ---
 
-# Architecture Components
+# Backend Modules
 
-## 1. Frontend Layer
+## 1. Chat Module
+- Handles user messages
+- Maintains session flow
+- Routes queries to AI and RAG system
 
-### Responsibilities
+## 2. RAG Engine
+- Stores lab manuals in vector form
+- Retrieves relevant context from ChromaDB
+- Enhances AI responses using domain knowledge
 
-* Provides the chatbot interface.
-* Allows file uploads.
-* Displays graphs and results.
-* Shows AI responses and experiment observations.
-* Provides report download options.
+## 3. Gemini Service
+- Connects with Gemini API
+- Generates responses based on prompts and context
+- Handles AI communication errors
 
-### Technologies
+## 4. File Upload Module
+- Accepts CSV and Excel files
+- Validates file type and structure
+- Stores file temporarily for processing
 
-* React.js
-* Vite
-* Axios
-* CSS
+## 5. Data Analysis Module
+- Processes data using Pandas and NumPy
+- Performs Ohm's Law calculations.
+- Future versions may support RC and Diode experiments.
+- Cleans and validates datasets
 
----
+## 6. Graph Generator
+- Creates scientific graphs using Matplotlib
+- Generates plots for experimental data
+- Prepares visuals for frontend display
 
-## 2. Backend Layer
+## 7. Report Generator
+- Combines analysis results and AI observations
+- Generates structured Markdown reports
+- Prepares downloadable output
 
-### Responsibilities
-
-* Handles API requests.
-* Manages chat sessions.
-* Processes uploaded files.
-* Coordinates AI responses.
-* Performs data analysis.
-* Stores experiment information.
-
-### Technology
-
-* FastAPI
-
-### APIs
-
-* POST `/chat`
-* POST `/upload`
-* POST `/analyze`
-* POST `/report`
-
----
-
-## 3. AI Layer
-
-### Gemini API
-
-The AI layer is responsible for:
-
-* Answering student questions.
-* Explaining concepts.
-* Generating observations.
-* Generating conclusions.
-* Assisting with experiment understanding.
+## 8. Database Module
+- Manages SQLite database connection
+- Stores sessions, messages, and analysis results
+- Handles data persistence using SQLModel
 
 ---
 
-## 4. RAG Layer
+# Frontend Modules
 
-### ChromaDB
+## 1. Home Page
+- Project introduction
+- Introduction to the Ohm's Law experiment.
 
-The RAG layer provides contextual information.
+## 2. Chat Interface
+- AI chatbot interaction screen
+- Displays messages and responses
+- Supports Markdown rendering
 
-Responsibilities:
+## 3. File Upload Page
+- Upload CSV/Excel files
+- Shows upload status
 
-* Store laboratory manuals.
-* Store experiment documents.
-* Retrieve relevant content.
-* Improve chatbot accuracy.
+## 4. Analysis Page
+- Displays calculated results
+- Shows generated graphs
 
----
-
-## 5. Data Processing Layer
-
-### Pandas and NumPy
-
-Responsibilities:
-
-* Read CSV files.
-* Read Excel files.
-* Clean experimental data.
-* Perform calculations.
-* Generate numerical results.
+## 5. Report Page
+- Displays final experiment report
+- Provides download option
 
 ---
 
-## 6. Visualization Layer
+# REST API Design
 
-### Matplotlib
+## 1. POST /chat
+**Purpose:** Handles chatbot conversation
 
-Responsibilities:
+**Request:**
+```json
+{
+  "session_id": "string",
+  "message": "string"
+}
+```
 
-* Generate experiment graphs.
-* Plot characteristics curves.
-* Display analysis results.
-
-Supported graphs:
-
-* Voltage vs Current graph.
-* RC charging curve.
-* Diode characteristic curve.
-
----
-
-## 7. Database Layer
-
-### SQLite Database
-
-Stores:
-
-* Chat history.
-* Session information.
-* Experiment results.
-* Generated reports.
-
-Database File:
-
-```text
-labmate.db
+**Response:**
+```json
+{
+  "response": "string"
+}
 ```
 
 ---
 
-# Data Flow
+## 2. POST /upload
+**Purpose:** Upload experiment data files
 
-## Conversational Chat Flow
+**Request:** Multipart form-data (file)
 
-1. Student enters a question.
-2. React sends the request to FastAPI.
-3. FastAPI searches ChromaDB.
-4. Relevant information is retrieved.
-5. Gemini generates the response.
-6. The response is stored in SQLite.
-7. The answer is returned to the frontend.
-
----
-
-## File Analysis Flow
-
-1. Student uploads CSV or Excel data.
-2. FastAPI validates the file.
-3. Pandas reads the data.
-4. NumPy performs calculations.
-5. Matplotlib generates graphs.
-6. Gemini generates observations.
-7. Results are stored in SQLite.
-8. Results are displayed to the user.
-
----
-
-# Component Interaction Diagram
-
-```mermaid
-sequenceDiagram
-    participant Student as Student
-    participant React as React Frontend
-    participant FastAPI as FastAPI Backend
-    participant RAG as ChromaDB
-    participant Gemini as Gemini API
-    participant Analysis as Data Analysis Module
-    participant DB as SQLite Database
-
-    Note over Student,RAG: Conversational Chat Flow
-
-    Student->>React: Enter question
-    React->>FastAPI: Send chat request
-    FastAPI->>RAG: Retrieve experiment knowledge
-    RAG-->>FastAPI: Return context
-    FastAPI->>Gemini: Generate response
-    Gemini-->>FastAPI: Return answer
-    FastAPI->>DB: Save chat history
-    FastAPI-->>React: Send response
-    React-->>Student: Display answer
-
-    Note over Student,DB: File Analysis Flow
-
-    Student->>React: Upload CSV/Excel file
-    React->>FastAPI: Send file
-    FastAPI->>Analysis: Analyze data
-    Analysis-->>FastAPI: Return results
-    FastAPI->>Gemini: Generate observations
-    Gemini-->>FastAPI: Return analysis
-    FastAPI->>DB: Save results
-    FastAPI-->>React: Return graphs and observations
-    React-->>Student: Display results
+**Response:**
+```json
+{
+  "file_id": "string",
+  "status": "success"
+}
 ```
 
 ---
 
-# API Architecture
+## 3. POST /analyze
+**Purpose:** Analyze uploaded experimental data
 
-| Method | Endpoint | Purpose                 |
-| ------ | -------- | ----------------------- |
-| POST   | /chat    | Send user messages      |
-| POST   | /upload  | Upload files            |
-| POST   | /analyze | Analyze experiment data |
-| POST   | /report  | Generate reports        |
+**Request:**
+```json
+{
+  "session_id": "string",
+  "file_id": "string"
+}
+```
 
----
-
-# Security Considerations
-
-* Store API keys in environment variables.
-* Validate uploaded files.
-* Restrict unsupported file types.
-* Validate user input.
-* Handle application errors safely.
-
----
-
-# Scalability Considerations
-
-Future improvements may include:
-
-* PostgreSQL database support.
-* User authentication.
-* Additional experiments.
-* PDF report generation.
-* Voice interaction.
-* Cloud deployment.
+**Response:**
+```json
+{
+  "metrics": {},
+  "graph": "string",
+  "observations": "string"
+}
+```
 
 ---
 
-# Design Principles
+## 4. POST /report
+**Purpose:** Generate final experiment report
 
-* Modular Architecture
-* Separation of Concerns
-* Reusable Components
-* Maintainable Code
-* Scalable Design
-* Context-Aware AI Responses
-* Simple User Experience
+**Request:**
+```json
+{
+  "session_id": "string"
+}
+```
+
+**Response:**
+```json
+{
+  "report": "string"
+}
+```
 
 ---
 
-# Conclusion
+# Database Tables
 
-LabMate AI follows a modular client-server architecture that combines artificial intelligence, retrieval-augmented generation, data analysis, and visualization techniques to assist engineering students during laboratory experiments. The architecture is designed to be maintainable, scalable, and suitable for future enhancements.
+## Session
+- session_id (Primary Key)
+- experiment_name
+- created_at
 
+## Message
+- message_id (Primary Key)
+- session_id
+- sender
+- message
+- timestamp
 
+## AnalysisResult
+- analysis_id (Primary Key)
+- session_id
+- metrics
+- graph_data
+
+## Report
+- report_id (Primary Key)
+- session_id
+- report_content
+
+---
+
+# Testing Plan
+
+- API endpoint testing using FastAPI docs
+- Chat response validation
+- File upload testing
+- Data analysis verification
+- Graph generation testing
+- AI response evaluation
+- Error handling validation
+- The MVP testing phase focuses only on the Ohm's Law experiment workflow.
+
+---
+
+# Expected Deliverables
+
+- FastAPI Backend Application
+- React Frontend Application
+- Gemini AI Integration
+- ChromaDB RAG System
+- Data Analysis Module
+- Graph Generation System
+- Complete AI Chatbot System
+- Project Documentation (All MD files)
+- GitHub Repository
+
+---
+
+# Future Enhancements
+
+Future versions of LabMate AI may include:
+
+- RC Circuit experiment support
+- Diode Characteristics experiment support
+- Excel file support
+- Multiple graph types
+- PDF report generation
+- User authentication
+- Voice interaction
+- Cloud deployment

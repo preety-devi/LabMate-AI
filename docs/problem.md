@@ -1,125 +1,152 @@
 # Problem Definition: AI Engineering Lab Assistant Chatbot (LabMate AI)
 
-This document outlines the core problem space, limitations of traditional engineering laboratory education, a side-by-side comparison of traditional vs. AI-assisted paradigms, and the objectives and target audience of the proposed **LabMate AI** solution.
+This document describes the problem faced by engineering students during laboratory sessions, the limitations of traditional lab workflows, and the proposed AI-based solution.
 
 ---
 
-## 1. Problem Statement
+# 1. Problem Statement
 
-In undergraduate engineering programs, laboratory courses are essential to ground theoretical lecture concepts in practical, empirical application. However, students frequently face conceptual and logistical bottlenecks during lab sessions. 
+Engineering laboratory courses are important for understanding theoretical concepts through practical experiments. However, students often face difficulties during lab sessions due to limited guidance, manual calculations, graph plotting, and report preparation.
 
-Because of high student-to-instructor ratios, students may not receive immediate help when they encounter doubts related to formulas, circuit behaviors, component connections, or data analysis. As a result, a significant amount of laboratory time is spent on repetitive manual calculations, data processing, and graph formatting instead of active learning.
-
----
-
-## 2. Existing Problems in Engineering Laboratories
-
-Traditional engineering lab sessions suffer from several recurring operational challenges:
-
-* **Limited Instructor Availability:** A single instructor or teaching assistant (TA) often manages 30+ students simultaneously, making individual guidance and quick troubleshooting impossible.
-* **Theory-Practical Gap:** Students struggle to connect abstract mathematical equations (e.g., transient response derivatives or semiconductor diode equations) with physical components on a breadboard.
-* **Manual Calculation Overhead:** Computational parameters are computed manually or by writing ad-hoc spreadsheet formulas, increasing unit conversion mistakes and calculation errors.
-* **Graph Plotting Difficulties:** Students spend valuable lab time fighting formatting in general-purpose spreadsheet applications rather than interpreting the curves.
-* **Report Writing Obstacles:** Many students face difficulties in writing original, data-driven observations and conclusions, leading to reports that are copied or lack analysis.
+Because of high student-to-instructor ratios, students may not receive immediate help when they encounter doubts related to formulas, calculations, circuit behavior, or observations. As a result, a significant amount of laboratory time is spent on repetitive tasks instead of understanding the experiment.
 
 ---
 
-## 3. Limitations of Traditional Lab Work
+# 2. Existing Problems in Engineering Laboratories
 
-The conventional paper-and-spreadsheet lab workflow is constrained by its static nature:
+Traditional laboratory sessions face several challenges:
 
-1. **Static Manuals:** Printed manuals present one-size-fits-all steps. They cannot explain *why* a step is performed, accommodate component variations, or debug a student's unique circuit layout.
-2. **Unit Conversion and Formula Errors:** Manual calculations are prone to calculation errors, such as mixing up milliseconds and seconds when computing the RC time constant ($\tau = RC$).
-3. **Time-Consuming Graphing:** Manually setting up axis limits, scales, and line fits in third-party software takes time away from actual experimentation.
-4. **Out-of-Context Conclusions:** Lacking analytical support, students often copy textbook theoretical summaries instead of drawing inferences from their actual, imperfect measurements.
+* Limited Instructor Availability: One instructor often manages many students simultaneously, making individual guidance difficult.
 
----
+* Theory-Practical Gap: Students struggle to connect theoretical concepts with practical experiments.
 
-## 4. Traditional vs. AI-Assisted Lab Work: A Comparison
+* Manual Calculations: Experiment calculations are often performed manually, increasing the possibility of errors.
 
-The table below contrasts the limitations of traditional, manual lab workflows with the capabilities introduced by the **LabMate AI** assistant:
+* Graph Plotting Difficulties: Students spend considerable time creating graphs and analyzing results.
 
-| Aspect / Workflow | Traditional Laboratory Work (Manual / Generic Spreadsheets) | AI-Assisted Laboratory Work (LabMate AI) |
-| :--- | :--- | :--- |
-| **Guidance & Query Support** | Students wait for the instructor or TA to resolve connection or theoretical doubts. | Students get instant, 24/7 answers from a chatbot trained on the local manual database. |
-| **Manual Access** | Printed or static PDFs that are hard to search and cannot clarify ambiguities. | Context-aware RAG search pulls the exact instruction chunk or diagram reference instantly. |
-| **Data Processing & Math** | Manual calculation or cell-by-cell Excel formulas, frequently resulting in calculation mistakes. | Automated processing via Pandas & NumPy directly from uploaded CSV/Excel files. |
-| **Visual Analysis** | Tedious manual graph scaling, formatting, and curve fitting in external tools. | Matplotlib plots generated automatically with accurate regression lines (e.g., $I$-$V$ curves). |
-| **Observations & Conclusions** | Plagiarized or generic summaries copied from textbook theory. | Unique, data-grounded summaries generated by Gemini based on the student's actual values. |
-| **Error Diagnostics** | Hard to isolate faulty readings or outlier data without manual inspection by a teacher. | Instantly flags calculation errors, anomalous outliers, or values outside theoretical bounds. |
-| **Time Allocation** | $\sim 70\%$ time spent on plotting, math, and formatting; only $\sim 30\%$ on physical experimentation. | Shifted focus: minimal overhead on math/graphs, allowing maximum time on physical circuit debugging. |
-| **Instructor Workload** | TAs are overwhelmed repeating basic guidelines, calculating metrics, and cross-checking graphs. | Instructors focus on high-level design validation, grading critical logic, and lab safety. |
+* Report Writing Issues: Many students face difficulties in writing observations, conclusions, and experiment reports.
 
 ---
 
-## 5. Need for an AI Laboratory Assistant
+# 3. Limitations of Traditional Lab Work
 
-Modern engineering laboratories require an intelligent digital assistant capable of:
+Traditional laboratory methods have several limitations:
 
-* Answering experiment-specific questions in real-time.
-* Explaining formula applications and conceptual principles dynamically.
-* Instantly analyzing experimental datasets.
-* Generating characteristics curves and plots automatically.
-* Writing structured observations based on actual measurements.
-* Supporting students through interactive, step-by-step guidance.
+1. Laboratory manuals provide fixed instructions and cannot answer student questions dynamically.
 
-By automating low-value administrative tasks, the AI assistant reduces repetitive overhead, enabling students to focus on critical thinking, experimental design, and physics concepts.
+2. Manual calculations can lead to mistakes in formulas and unit conversions.
 
----
+3. Graph plotting using spreadsheets or manual methods is time-consuming.
 
-## 6. Proposed Solution
+4. Students often copy observations and conclusions instead of understanding their experimental results.
 
-**LabMate AI** is an AI-powered conversational engineering assistant. The system integrates:
-
-* **React.js Frontend:** A modern, interactive web UI with Markdown, LaTeX math rendering, and drag-and-drop file upload.
-* **FastAPI Backend:** High-performance REST APIs managing calculation services and LLM integration.
-* **Gemini API:** Generative AI engine providing interactive explanations and text synthesis.
-* **ChromaDB (RAG):** Local vector store containing indexed university lab manuals to ensure context-aware, syllabus-aligned answers.
-* **Pandas and NumPy:** Python computational libraries for data cleaning, preprocessing, and parameters fitting.
-* **Matplotlib:** Backend plotting module returning clean, fitted curve images.
-* **SQLite:** Local relational database archiving student chat sessions, history, and report templates.
+5. Instructors may not always be available to resolve every doubt during the lab session.
 
 ---
 
-## 7. Project Objectives
+# 4. Need for an AI Laboratory Assistant
 
-The key objectives of LabMate AI are:
+Modern engineering laboratories require an intelligent assistant capable of:
 
-1. **Provide Contextual Q&A:** Enable instant, curriculum-aligned answers using embedded PDF manuals.
-2. **Automate Experimental Data Analysis:** Clear the burden of spreadsheet calculations through automatic CSV/Excel data cleaning and calculations.
-3. **Generate Graph Visualizations:** Standardize and automate scientific plots.
-4. **Synthesize Observations:** Produce data-driven conclusions that relate to the student's measured data.
-5. **Streamline Report Preparation:** Consolidate chat discussions, analysis results, and charts into a single exportable document.
-6. **Improve Engineering Engagement:** Boost active laboratory learning and conceptual understanding.
+* Answering experiment-related questions.
 
----
+* Explaining formulas and concepts.
 
-## 8. Expected Benefits
+* Analyzing experimental data.
 
-### For Students
-* Reduces manual calculations and unit conversion mistakes.
-* Saves time spent on layout and formatting tasks during laboratory sessions.
-* Improves conceptual understanding through instant, interactive explanations.
-* Guides self-paced learning and independent troubleshooting.
+* Generating graphs automatically.
 
-### For Instructors
-* Reduces repetitive question-answering during lab hours.
-* Simplifies tracking and verifying student calculations and results.
-* Improves overall laboratory operation efficiency.
+* Providing observations and conclusions.
 
-### For Institutions
-* Modernizes the laboratory learning experience.
-* Integrates generative AI constructively into the curriculum.
-* Boosts student performance and active engagement.
+* Assisting students throughout the experiment process.
+
+Such a system can reduce repetitive work and allow students to focus more on understanding concepts and performing experiments.
 
 ---
 
-## 9. Target Users
+# 5. Proposed Solution
 
-### Primary Users
-* Undergraduate engineering students enrolled in fundamental electronics, electrical, and physics lab courses.
-* Students conducting basic experiments (Ohm's Law, RC Transient response, Diode characteristics).
+**LabMate AI** is an AI-powered engineering laboratory assistant chatbot designed specifically for engineering students.
 
-### Secondary Users
-* Laboratory instructors and teaching assistants managing lab cohorts.
-* Academic institutions looking to adopt AI-assisted lab methodologies.
+The system integrates:
+
+* FastAPI: Backend API development.
+
+* React.js: Interactive user interface.
+
+* Gemini API: Conversational AI capabilities.
+
+* ChromaDB (RAG): Retrieval of experiment knowledge and contextual information.
+
+* Pandas and NumPy: Data analysis and calculations.
+
+* Matplotlib: Graph generation and visualization.
+
+* SQLite: Storage of experiment sessions and reports.
+
+The current MVP focuses on the Ohm's Law experiment. Students can ask experiment-related questions, upload CSV data, generate a Voltage-Current graph, and receive AI-generated observations and conclusions.
+
+Additional experiments and features will be added in future versions.
+
+---
+
+# 6. Project Objectives
+
+The major objectives of LabMate AI are:
+
+1. Provide experiment-related question answering.
+2. Analyze Ohm's Law experiment data.
+3. Generate Voltage-Current graphs.
+4. Produce observations and conclusions.
+5. Assist students during laboratory experiments.
+---
+
+# 7. Expected Benefits
+
+## For Students
+
+* Reduces manual calculations.
+
+* Saves time during laboratory sessions.
+
+* Improves understanding of experiments.
+
+* Helps generate accurate reports.
+
+* Provides instant assistance.
+
+## For Instructors
+
+* Reduces repetitive questions.
+
+* Supports students during experiments.
+
+* Improves laboratory efficiency.
+
+## For Institutions
+
+* Enhances the laboratory learning experience.
+
+* Encourages the use of AI in education.
+
+* Improves student engagement.
+
+---
+
+# 8. Target Users
+
+## Primary Users
+
+* Engineering students.
+
+* Electronics and electrical laboratory students.
+
+* Physics laboratory students.
+
+## Secondary Users
+
+* Laboratory instructors.
+
+* Teaching assistants.
+
+* Academic institutions.
