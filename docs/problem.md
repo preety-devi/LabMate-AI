@@ -1,135 +1,119 @@
 # Problem Definition: AI Engineering Lab Assistant Chatbot (LabMate AI)
 
-This document describes the problem faced by engineering students during laboratory sessions, the limitations of traditional lab workflows, and the proposed AI-based solution.
+This document describes the challenges faced by engineering students during laboratory preparation and execution, limitations of traditional lab systems, and the proposed AI-based intelligent solution.
 
 ---
 
 # 1. Problem Statement
 
-Engineering laboratory courses are important for understanding theoretical concepts through practical experiments. However, students often face difficulties during lab sessions due to limited guidance, manual calculations, graph plotting, and report preparation.
+Engineering laboratory courses are essential for practical understanding of theoretical concepts. However, students often face difficulties in understanding experiments, preparing viva answers, writing lab reports, and revising concepts efficiently.
 
-Because of high student-to-instructor ratios, students may not receive immediate help when they encounter doubts related to formulas, calculations, circuit behavior, or observations. As a result, a significant amount of laboratory time is spent on repetitive tasks instead of understanding the experiment.
+Due to limited instructor availability and time constraints, students do not always receive immediate support for their doubts. As a result, laboratory learning becomes time-consuming, less interactive, and dependent on multiple external resources.
+
+There is a need for an intelligent system that can provide instant, structured, and personalized assistance for any engineering lab-related query.
 
 ---
 
 # 2. Existing Problems in Engineering Laboratories
 
-Traditional laboratory sessions face several challenges:
+Traditional laboratory environments face several challenges:
 
-* Limited Instructor Availability: One instructor often manages many students simultaneously, making individual guidance difficult.
+* Limited Instructor Availability: One instructor handles many students, reducing individual attention.
 
-* Theory-Practical Gap: Students struggle to connect theoretical concepts with practical experiments.
+* Lack of Instant Support: Students cannot always get immediate answers during experiments.
 
-* Manual Calculations: Experiment calculations are often performed manually, increasing the possibility of errors.
+* Difficulty in Understanding Concepts: Theory and practical implementation often feel disconnected.
 
-* Graph Plotting Difficulties: Students spend considerable time creating graphs and analyzing results.
+* Manual Report Preparation: Writing observations, conclusions, and reports is time-consuming.
 
-* Report Writing Issues: Many students face difficulties in writing observations, conclusions, and experiment reports.
+* Repetitive Doubts: Same questions are repeatedly asked by multiple students.
 
 ---
 
-# 3. Limitations of Traditional Lab Work
+# 3. Limitations of Traditional Lab Systems
 
-Traditional laboratory methods have several limitations:
+Traditional lab systems are static and have the following limitations:
 
-1. Laboratory manuals provide fixed instructions and cannot answer student questions dynamically.
+1. Lab manuals provide fixed instructions and cannot respond to student queries dynamically.
 
-2. Manual calculations can lead to mistakes in formulas and unit conversions.
+2. Students rely on multiple sources for understanding experiments.
 
-3. Graph plotting using spreadsheets or manual methods is time-consuming.
+3. Report writing is manual and often lacks structure.
 
-4. Students often copy observations and conclusions instead of understanding their experimental results.
+4. Viva preparation depends on external notes and materials.
 
-5. Instructors may not always be available to resolve every doubt during the lab session.
+5. No personalized learning or chat history system is available.
 
 ---
 
 # 4. Need for an AI Laboratory Assistant
 
-Modern engineering laboratories require an intelligent assistant capable of:
+Modern engineering education requires an intelligent assistant that can:
 
-* Answering experiment-related questions.
+* Answer any experiment-related query in real time.
+* Generate structured lab reports automatically.
+* Provide viva questions and answers.
+* Explain engineering concepts in simple language.
+* Support students across multiple topics dynamically.
+* Maintain chat history for future revision.
 
-* Explaining formulas and concepts.
-
-* Analyzing experimental data.
-
-* Generating graphs automatically.
-
-* Providing observations and conclusions.
-
-* Assisting students throughout the experiment process.
-
-Such a system can reduce repetitive work and allow students to focus more on understanding concepts and performing experiments.
+Such a system improves learning efficiency, understanding, and accessibility in laboratory education.
 
 ---
 
 # 5. Proposed Solution
 
-**LabMate AI** is an AI-powered engineering laboratory assistant chatbot designed specifically for engineering students.
+**LabMate AI** is an AI-powered engineering laboratory assistant chatbot designed to assist students in real-time learning and experiment support.
 
-The system integrates:
+It is a **general-purpose AI chatbot for engineering labs**, capable of handling any lab-related query.
 
-* FastAPI: Backend API development.
+The system uses:
 
-* React.js: Interactive user interface.
+* React.js → Frontend user interface  
+* FastAPI → Backend API layer  
+* Gemini API → AI response generation engine  
+* SQLite / MongoDB → Chat history storage  
 
-* Gemini API: Conversational AI capabilities.
+The system works dynamically for any engineering topic, including electrical, electronics, physics, and general engineering concepts.
 
-* ChromaDB (RAG): Retrieval of experiment knowledge and contextual information.
-
-* Pandas and NumPy: Data analysis and calculations.
-
-* Matplotlib: Graph generation and visualization.
-
-* SQLite: Storage of experiment sessions and reports.
-
-The current MVP focuses on the Ohm's Law experiment. Students can ask experiment-related questions, upload CSV data, generate a Voltage-Current graph, and receive AI-generated observations and conclusions.
-
-Additional experiments and features will be added in future versions.
+It also includes a **chat history feature**, allowing users to revisit previous queries and responses for better learning.
 
 ---
 
 # 6. Project Objectives
 
-The major objectives of LabMate AI are:
+The main objectives of LabMate AI are:
 
-1. Provide experiment-related question answering.
-2. Analyze Ohm's Law experiment data.
-3. Generate Voltage-Current graphs.
-4. Produce observations and conclusions.
-5. Assist students during laboratory experiments.
+1. Provide AI-based answers for any engineering lab-related query.
+2. Generate structured explanations, viva questions, and lab reports.
+3. Support dynamic and open-ended student queries.
+4. Maintain chat history for personalized learning.
+5. Improve accessibility and speed of lab preparation.
+6. Reduce dependency on static lab manuals and multiple resources.
+
 ---
 
 # 7. Expected Benefits
 
 ## For Students
 
-* Reduces manual calculations.
-
-* Saves time during laboratory sessions.
-
-* Improves understanding of experiments.
-
-* Helps generate accurate reports.
-
-* Provides instant assistance.
+* Instant answers to any lab-related query.
+* Faster lab preparation and report writing.
+* Better understanding of concepts.
+* Access to previous chat history for revision.
+* Reduced dependency on multiple sources.
 
 ## For Instructors
 
-* Reduces repetitive questions.
-
-* Supports students during experiments.
-
-* Improves laboratory efficiency.
+* Reduced repetitive student queries.
+* Improved student engagement.
+* Better focus on conceptual teaching.
 
 ## For Institutions
 
-* Enhances the laboratory learning experience.
-
-* Encourages the use of AI in education.
-
-* Improves student engagement.
+* Enhanced digital learning environment.
+* Integration of AI in laboratory education.
+* Improved academic performance and efficiency.
 
 ---
 
@@ -137,16 +121,16 @@ The major objectives of LabMate AI are:
 
 ## Primary Users
 
-* Engineering students.
-
-* Electronics and electrical laboratory students.
-
-* Physics laboratory students.
+* Engineering students (Electrical, Electronics, Physics, Computer Engineering)
 
 ## Secondary Users
 
-* Laboratory instructors.
+* Laboratory instructors
+* Teaching assistants
+* Academic institutions
 
-* Teaching assistants.
+---
 
-* Academic institutions.
+# ⭐ Summary
+
+LabMate AI is an intelligent, AI-powered laboratory assistant that enables students to interact naturally, learn faster, generate structured reports, and access their learning history — making laboratory education more efficient, modern, and interactive.

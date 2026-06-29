@@ -1,12 +1,12 @@
-# Implementation Plan
+# Implementation Plan: LabMate AI – AI Engineering Lab Assistant Chatbot
 
-This document outlines the implementation plan for **LabMate AI – AI Engineering Lab Assistant Chatbot**, a final-year engineering project designed to assist students in laboratory experiments through AI-based chat, data analysis, and visualization.
+This document outlines the implementation plan for LabMate AI, a web-based AI engineering lab assistant chatbot designed to help students with experiment explanations, viva preparation, lab reports, and concept understanding using AI.
 
 ---
 
 # Project Title
 
-**LabMate AI – AI Engineering Lab Assistant Chatbot**
+LabMate AI – AI Engineering Lab Assistant Chatbot
 
 ---
 
@@ -25,22 +25,11 @@ This document outlines the implementation plan for **LabMate AI – AI Engineeri
 ## AI Integration
 - Google Gemini API
 
-## RAG System
-- ChromaDB (Vector Database)
-
 ## Database
-- SQLite
-- SQLModel (ORM)
+- SQLite (Chat History Storage)
 
-## Data Processing
-- Pandas
-- NumPy
-
-## Visualization
-- Matplotlib
-
-## Excel Support
-- OpenPyXL
+## Environment Configuration
+- .env (Environment Variables Management)
 
 ## Version Control
 - Git
@@ -48,9 +37,25 @@ This document outlines the implementation plan for **LabMate AI – AI Engineeri
 
 ---
 
+# Environment Variables (.env)
+
+The project uses a .env file to store sensitive information.
+
+## Example:
+
+GEMINI_API_KEY=your_gemini_api_key_here  
+DATABASE_URL=sqlite:///labmate.db  
+SECRET_KEY=your_secret_key_here  
+
+## Purpose:
+- Store API keys securely
+- Avoid hardcoding sensitive data
+- Manage configuration separately from code
+
+---
+
 # Project Folder Structure
 
-```
 LabMateAI/
 │
 ├── backend/
@@ -58,16 +63,16 @@ LabMateAI/
 │   │   ├── api/
 │   │   ├── services/
 │   │   │   ├── gemini.py
-│   │   │   ├── rag.py
-│   │   │   ├── analyzer.py
-│   │   │   └── plotter.py
+│   │   │   ├── prompt_engine.py
+│   │   │   └── chat_service.py
 │   │   ├── models/
 │   │   ├── database/
 │   │   └── main.py
 │
 ├── frontend/
 │   ├── src/
-│   ├── public/
+│   ├── components/
+│   ├── pages/
 │   └── App.jsx
 │
 ├── docs/
@@ -76,224 +81,152 @@ LabMateAI/
 │   ├── system_architecture.md
 │   └── implementation_plan.md
 │
+├── .env
+├── .gitignore
 └── README.md
-
-.gitignore
-```
 
 ---
 
 # Backend Modules
 
-## 1. Chat Module
+## Chat Module
 - Handles user messages
-- Maintains session flow
-- Routes queries to AI and RAG system
+- Sends requests to Gemini API
+- Returns AI-generated responses
 
-## 2. RAG Engine
-- Stores lab manuals in vector form
-- Retrieves relevant context from ChromaDB
-- Enhances AI responses using domain knowledge
+---
 
-## 3. Gemini Service
-- Connects with Gemini API
-- Generates responses based on prompts and context
-- Handles AI communication errors
+## Prompt Engine
+- Creates structured prompts
+- Detects query type (explanation, viva, report, concept)
+- Ensures consistent output format
 
-## 4. File Upload Module
-- Accepts CSV and Excel files
-- Validates file type and structure
-- Stores file temporarily for processing
+---
 
-## 5. Data Analysis Module
-- Processes data using Pandas and NumPy
-- Performs Ohm's Law calculations.
-- Future versions may support RC and Diode experiments.
-- Cleans and validates datasets
+## Gemini Service
+- Connects to Gemini API
+- Generates AI responses
+- Handles errors and retries
 
-## 6. Graph Generator
-- Creates scientific graphs using Matplotlib
-- Generates plots for experimental data
-- Prepares visuals for frontend display
+---
 
-## 7. Report Generator
-- Combines analysis results and AI observations
-- Generates structured Markdown reports
-- Prepares downloadable output
+## Chat History Module
+- Stores user queries and AI responses
+- Saves timestamp of each chat
+- Retrieves previous conversations
 
-## 8. Database Module
-- Manages SQLite database connection
-- Stores sessions, messages, and analysis results
-- Handles data persistence using SQLModel
+---
+
+## Database Module
+- Manages SQLite database
+- Stores chat history
+- Handles data persistence
+
+---
+
+## Config Module (.env)
+- Loads environment variables
+- Provides secure access to API keys
+- Keeps configuration separate from code
 
 ---
 
 # Frontend Modules
 
-## 1. Home Page
-- Project introduction
-- Introduction to the Ohm's Law experiment.
+## Chat Interface
+- Main chatbot UI
+- User input field
+- AI response display
 
-## 2. Chat Interface
-- AI chatbot interaction screen
-- Displays messages and responses
-- Supports Markdown rendering
+---
 
-## 3. File Upload Page
-- Upload CSV/Excel files
-- Shows upload status
+## History Panel
+- Shows previous chats
+- Allows users to reopen old conversations
 
-## 4. Analysis Page
-- Displays calculated results
-- Shows generated graphs
+---
 
-## 5. Report Page
-- Displays final experiment report
-- Provides download option
+## Home Page
+- Introduction page
+- Basic project overview
 
 ---
 
 # REST API Design
 
-## 1. POST /chat
-**Purpose:** Handles chatbot conversation
+## POST /chat
+Purpose: Send message and get AI response
 
-**Request:**
-```json
+Request:
 {
-  "session_id": "string",
-  "message": "string"
+  "message": "string",
+  "session_id": "string"
 }
-```
 
-**Response:**
-```json
+Response:
 {
   "response": "string"
 }
-```
 
 ---
 
-## 2. POST /upload
-**Purpose:** Upload experiment data files
+## GET /history
+Purpose: Fetch chat history
 
-**Request:** Multipart form-data (file)
-
-**Response:**
-```json
+Response:
 {
-  "file_id": "string",
+  "history": []
+}
+
+---
+
+## DELETE /history
+Purpose: Clear chat history
+
+Response:
+{
   "status": "success"
 }
-```
 
 ---
 
-## 3. POST /analyze
-**Purpose:** Analyze uploaded experimental data
+# Database Table: ChatHistory
 
-**Request:**
-```json
-{
-  "session_id": "string",
-  "file_id": "string"
-}
-```
-
-**Response:**
-```json
-{
-  "metrics": {},
-  "graph": "string",
-  "observations": "string"
-}
-```
-
----
-
-## 4. POST /report
-**Purpose:** Generate final experiment report
-
-**Request:**
-```json
-{
-  "session_id": "string"
-}
-```
-
-**Response:**
-```json
-{
-  "report": "string"
-}
-```
-
----
-
-# Database Tables
-
-## Session
-- session_id (Primary Key)
-- experiment_name
-- created_at
-
-## Message
-- message_id (Primary Key)
+- id (Primary Key)
 - session_id
-- sender
-- message
+- user_message
+- bot_response
 - timestamp
-
-## AnalysisResult
-- analysis_id (Primary Key)
-- session_id
-- metrics
-- graph_data
-
-## Report
-- report_id (Primary Key)
-- session_id
-- report_content
 
 ---
 
 # Testing Plan
 
-- API endpoint testing using FastAPI docs
-- Chat response validation
-- File upload testing
-- Data analysis verification
-- Graph generation testing
-- AI response evaluation
-- Error handling validation
-- The MVP testing phase focuses only on the Ohm's Law experiment workflow.
+- Test chat API using FastAPI
+- Test UI chat flow
+- Validate chat history saving
+- Check Gemini responses
+- Test error handling
 
 ---
 
 # Expected Deliverables
 
-- FastAPI Backend Application
-- React Frontend Application
-- Gemini AI Integration
-- ChromaDB RAG System
-- Data Analysis Module
-- Graph Generation System
-- Complete AI Chatbot System
-- Project Documentation (All MD files)
-- GitHub Repository
+- FastAPI backend
+- React frontend
+- Gemini API integration
+- SQLite chat history system
+- .env configuration support
+- Full AI chatbot system
+- Documentation files
 
 ---
 
 # Future Enhancements
 
-Future versions of LabMate AI may include:
-
-- RC Circuit experiment support
-- Diode Characteristics experiment support
-- Excel file support
-- Multiple graph types
-- PDF report generation
-- User authentication
-- Voice interaction
+- User login system
+- Multi-user chat history
 - Cloud deployment
+- Voice interaction
+- PDF export of chats
+- Mobile app support

@@ -6,43 +6,37 @@ This document defines the software requirements for **LabMate AI – AI Engineer
 
 # 1. Introduction
 
-LabMate AI is an AI-powered engineering laboratory assistant designed to help students during laboratory experiments. The system provides a conversational interface for answering experiment-related questions, analyzing experimental data, generating graphs, and assisting students in writing observations and conclusions.
+LabMate AI is an AI-powered engineering laboratory assistant designed to help students understand engineering concepts, experiments, and related academic topics through a conversational interface.
+
+The system provides structured responses such as experiment explanations, viva questions, lab report content, and concept clarification using an AI chatbot.
 
 ---
 
 # 2. Purpose
 
-The purpose of this specification is to define the requirements of the LabMate AI system. The application aims to simplify laboratory work by reducing manual calculations, automating data analysis, and improving student understanding of engineering concepts.
+The purpose of this specification is to define the requirements of the LabMate AI system. The application aims to simplify learning by providing instant AI-generated academic support for engineering students.
+
+It reduces dependency on multiple study sources and provides a single interactive platform for lab preparation and concept understanding.
 
 ---
 
 # 3. Scope
 
-The current MVP includes:
+The current system includes:
 
-* AI-powered chatbot for laboratory assistance.
-* Context-aware question answering using RAG.
-* Support for selected engineering experiments.
-* CSV and Excel file upload.
-* Experimental data analysis.
-* Graph generation and visualization.
-* Observation and conclusion generation.
-* Session and report storage.
+* AI-powered chatbot for engineering and lab assistance.
+* Dynamic question answering for any topic.
+* Structured responses for experiments and concepts.
+* Viva question generation.
+* Lab report assistance (theory, procedure, conclusion, precautions).
+* Chat history storage and retrieval.
 
-Supported experiments:
+Supported areas:
 
-Current MVP:
-
-• Ohm's Law Experiment
-
-Future Enhancements:
-
-• RC Circuit
-• Diode Characteristics
-• Additional laboratory experiments
-• PDF reports
-• Voice interaction
-
+* Electrical Engineering concepts
+* Electronics Engineering concepts
+* Physics-related concepts
+* General engineering topics
 
 ---
 
@@ -51,57 +45,34 @@ Future Enhancements:
 ## FR-1: Conversational Chat Interface
 
 * FR-1.1: The system shall allow users to interact through a text-based chat interface.
-* FR-1.2: The system shall provide responses to experiment-related questions.
+* FR-1.2: The system shall provide responses to engineering and lab-related queries.
 * FR-1.3: The system shall maintain conversation context during an active session.
 
 ---
 
-## FR-2: Knowledge Retrieval
+## FR-2: AI Response Generation
 
-* FR-2.1: The system shall store laboratory reference materials.
-* FR-2.2: The system shall retrieve relevant information based on user queries.
-* FR-2.3: The system shall provide contextual responses using retrieved knowledge.
-
----
-
-## FR-3: File Upload
-
-* FR-3.1: The system shall support CSV file uploads.
-* FR-3.2: The system shall support Excel file uploads.
-* FR-3.3: The system shall validate uploaded files.
-* FR-3.4: The system shall display appropriate error messages for invalid files.
+* FR-2.1: The system shall use Gemini API to generate responses.
+* FR-2.2: The system shall provide structured academic outputs.
+* FR-2.3: The system shall support any engineering-related topic dynamically.
+* FR-2.4: The system shall generate explanations, viva questions, and lab reports.
 
 ---
 
-## FR-4: Data Analysis
+## FR-3: Chat History Feature
 
-* FR-4.1 The system shall perform Ohm's Law calculations.
-* FR-4.2: The system shall analyze uploaded numerical data.
-* FR-4.3: The system shall generate calculated results.
-
----
-
-## FR-5: Graph Generation
-
-* FR-5.1 The system shall generate Voltage versus Current graphs.
-* FR-5.2: The system shall display graphs to the user.
-* FR-5.3: The generated graphs shall include proper labels and titles.
+* FR-3.1: The system shall store user queries and AI responses.
+* FR-3.2: The system shall display previous chats in a history section.
+* FR-3.3: The system shall allow users to revisit past conversations.
+* FR-3.4: The system shall maintain session-based or user-based history.
 
 ---
 
-## FR-6: Observation and Conclusion Generation
+## FR-4: Prompt Processing
 
-* FR-6.1: The system shall generate observations from experimental data.
-* FR-6.2: The system shall generate conclusions based on calculated results.
-* FR-6.3: The AI model shall assist in producing meaningful experiment summaries.
-
----
-
-## FR-7: Report Generation
-
-* FR-7.1: The system shall compile experiment results.
-* FR-7.2: The system shall allow users to export reports.
-* FR-7.3: The report shall include calculations, graphs, observations, and conclusions.
+* FR-4.1: The system shall process user input before sending it to the AI model.
+* FR-4.2: The system shall classify user intent (e.g., explanation, viva, report).
+* FR-4.3: The system shall generate structured prompts dynamically.
 
 ---
 
@@ -109,24 +80,30 @@ Future Enhancements:
 
 ## NFR-1: Performance
 
-* The system should provide responses within acceptable response times.
-* File analysis and graph generation should complete efficiently.
+* The system shall provide responses within acceptable time limits.
+* Chat responses should be generated in real-time.
+
+---
 
 ## NFR-2: Usability
 
-* The interface shall be simple and easy to use.
-* Error messages shall be understandable.
-* The system shall support modern web browsers.
+* The interface shall be simple and user-friendly.
+* The chat system shall be easy to navigate.
+* History view shall be easily accessible.
+
+---
 
 ## NFR-3: Reliability
 
-* The system shall handle invalid input gracefully.
-* The system shall prevent application crashes during errors.
+* The system shall handle invalid or unclear user input gracefully.
+* The system shall not crash during API failures.
+
+---
 
 ## NFR-4: Maintainability
 
-* The application shall follow modular design principles.
-* Components shall be easy to update and extend.
+* The system shall follow modular architecture.
+* Frontend and backend shall be independently maintainable.
 
 ---
 
@@ -138,17 +115,13 @@ Future Enhancements:
 * Node.js 18 or higher
 * FastAPI
 * React.js
-* SQLite
 
-### Python Libraries
+---
 
-* pandas
-* numpy
-* matplotlib
-* openpyxl
-* chromadb
-* google-generativeai
-* sqlalchemy
+## Libraries & Tools
+
+* google-generativeai (Gemini API SDK)
+* SQLite / MongoDB (for chat history storage)
 
 ---
 
@@ -156,8 +129,8 @@ Future Enhancements:
 
 * 4 GB RAM minimum
 * Dual-core processor or higher
-* Internet connection for Gemini API access
-* Minimum 1 GB free storage
+* Stable internet connection
+* Minimum 1 GB storage
 
 ---
 
@@ -166,54 +139,54 @@ Future Enhancements:
 The system shall provide REST APIs including:
 
 | Method | Endpoint | Purpose |
-|--------|-----------|---------|
-| POST | /chat | Send user messages |
-| POST | /upload | Upload CSV or Excel files |
-| POST | /analyze | Analyze uploaded data |
-| GET | /report | Retrieve generated reports |
+|--------|----------|---------|
+| POST | /chat | Send user message and get AI response |
+| GET | /history | Fetch chat history |
+| POST | /history/save | Save chat messages |
+| DELETE | /history | Clear chat history |
 
 ---
 
 # 8. Database Requirements
 
-## SQLite Database
+## Chat History Storage
 
 The database shall store:
 
-* Chat history
-* Session information
-* Experiment information
-* Generated reports
-
-## ChromaDB
-
-The vector database shall store:
-
-* Laboratory manuals
-* Experiment information
-* Reference materials
+* User queries
+* AI-generated responses
+* Timestamp of conversation
+* Session or user ID (optional)
 
 ---
 
 # 9. User Requirements
 
-* Users shall access the application through a web browser.
-* Users shall upload properly formatted experimental data files.
-* Users shall provide experiment-related input.
+* Users shall access the system via a web browser.
+* Users shall input text queries related to engineering topics.
+* Users shall be able to view previous chat history.
 
 ---
 
 # 10. Constraints
 
-* The system requires an active Gemini API key.
-* Internet access is required for AI responses.
-* File uploads are limited to supported formats.
+* Internet connection is required for AI responses.
+* Gemini API key is required for system functionality.
+* System depends on external AI service availability.
 
 ---
 
 # 11. Assumptions
 
-* Users possess basic knowledge of laboratory experiments.
-* Internet connectivity is available.
-* Laboratory datasets contain valid numerical values.
-* External AI services are operational.
+* Users have basic understanding of engineering concepts.
+* Users will input meaningful academic queries.
+* AI-generated responses are used for educational purposes.
+
+---
+
+# 12. Future Enhancements
+
+* Voice-based chatbot interaction.
+* PDF export of chat responses.
+* Multi-language support.
+* Improved personalization of chat history.
