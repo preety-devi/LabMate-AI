@@ -6,11 +6,11 @@
 backend/venv/
 venv/
 
-# Python Cache
+# Python cache
 __pycache__/
-*.py[cod]
+*.pyc
 *.pyo
-*.pyd
+*.pyd 
 
 # Environment Variables
 backend/.env
