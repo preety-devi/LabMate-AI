@@ -1,57 +1,127 @@
-import React, { useState } from "react";
-import HistoryPanel from "../components/HistoryPanel";
-import ChatBox from "../components/ChatBox";
-import { sendMessage } from "../services/api";
+import React, { useState, useEffect } from "react";
+import Sidebar from "../components/Sidebar";
+import Header from "../components/Header";
+import ChatWindow from "../components/ChatWindow";
+import { fetchSessions, createSession, fetchMessages, sendMessage, deleteSession } from "../services/api";
 
-const Chat = () => {
-  const [sessions, setSessions] = useState([
-    { id: 1, title: "Ohms Law Experiment" },
-    { id: 2, title: "Logic Gates Verification" },
-  ]);
-  const [activeSessionId, setActiveSessionId] = useState(1);
-  const [messagesBySession, setMessagesBySession] = useState({
-    1: [
-      { sender: "assistant", content: "Hi! How can I help you today?", time: new Date() },
-    ],
-
-  });
+const Chat = ({ onGoHome }) => {
+  const [sessions, setSessions] = useState([]);
+  const [activeSessionId, setActiveSessionId] = useState("new");
+  const [messagesBySession, setMessagesBySession] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Fetch all chat sessions from the database on mount
+  useEffect(() => {
+    const loadSessions = async () => {
+      try {
+        const data = await fetchSessions();
+        setSessions(data);
+        // Start in the transient "new" session state on load/refresh
+        setActiveSessionId("new");
+      } catch (error) {
+        console.error("Failed to load sessions:", error);
+        setActiveSessionId("new");
+      } finally {
+        setIsInitialLoading(false);
+      }
+    };
+    loadSessions();
+  }, []);
+
+  // Fetch messages for the active session when it changes
+  useEffect(() => {
+    // Exit early if activeSessionId is not set, or is the transient "new" session
+    if (!activeSessionId || activeSessionId === "new") return;
+    
+    // Avoid re-fetching if messages already loaded for this session
+    if (messagesBySession[activeSessionId]) return;
+
+    const loadMessages = async () => {
+      try {
+        const msgs = await fetchMessages(activeSessionId);
+        // Format backend message structure to match frontend component expected property (time: created_at)
+        const formattedMsgs = msgs.map((m) => ({
+          sender: m.sender,
+          content: m.content,
+          time: m.created_at,
+        }));
+        setMessagesBySession((prev) => ({
+          ...prev,
+          [activeSessionId]: formattedMsgs,
+        }));
+      } catch (error) {
+        console.error(`Failed to load messages for session ${activeSessionId}:`, error);
+      }
+    };
+    loadMessages();
+  }, [activeSessionId, messagesBySession]);
 
   const handleSendMessage = async (query) => {
-    // 1. Add user message locally
+    let currentSessionId = activeSessionId;
+    let newSessCreated = null;
+
+    // 1. If it's a transient new session, create it in the database first
+    if (currentSessionId === "new") {
+      try {
+        newSessCreated = await createSession("New Session");
+        currentSessionId = newSessCreated.id;
+      } catch (error) {
+        console.error("Failed to create session on the backend:", error);
+        alert("Failed to start a new chat session. Please verify the backend is running.");
+        return;
+      }
+    }
+
+    // 2. Add user message locally
     const userMsg = { sender: "user", content: query, time: new Date() };
-    const currentMessages = messagesBySession[activeSessionId] || [];
+    
+    // If it was a new session, the base message list starts with the welcome message
+    const currentMessages = newSessCreated
+      ? [{ sender: "assistant", content: "Hi! How can I help you today?", time: newSessCreated.created_at }]
+      : (messagesBySession[currentSessionId] || []);
+      
     const updatedMessages = [...currentMessages, userMsg];
 
-    setMessagesBySession({
-      ...messagesBySession,
-      [activeSessionId]: updatedMessages,
-    });
+    // Optimistically update messages locally
+    setMessagesBySession((prev) => ({
+      ...prev,
+      [currentSessionId]: updatedMessages,
+    }));
+
+    if (newSessCreated) {
+      // Sync list state and set active session ID
+      setSessions((prev) => [newSessCreated, ...prev]);
+      setActiveSessionId(currentSessionId);
+    }
 
     setIsLoading(true);
 
     try {
-      // Build context string from the last few messages
-      const context = currentMessages
-        .slice(-5)
-        .map((m) => `${m.sender === "user" ? "Student" : "Assistant"}: ${m.content}`)
-        .join("\n");
+      // 3. Call API to send the message
+      const result = await sendMessage(currentSessionId, query);
 
-      // 2. Call API
-      const result = await sendMessage(query, context);
-
-      // 3. Add response message locally
+      // 4. Add response message locally
       const assistantMsg = { sender: "assistant", content: result.response, time: new Date() };
       setMessagesBySession((prev) => ({
         ...prev,
-        [activeSessionId]: [...(prev[activeSessionId] || []), assistantMsg],
+        [currentSessionId]: [...(prev[currentSessionId] || updatedMessages), assistantMsg],
       }));
+
+      // 5. Sync sessions to get the auto-generated title
+      const data = await fetchSessions();
+      setSessions(data);
     } catch (error) {
       console.error("API error:", error);
-      const errorMsg = { sender: "assistant", content: "Sorry, I had trouble reaching the AI. Please verify the backend is running and try again.", time: new Date() };
+      const errorMsg = {
+        sender: "assistant",
+        content: "Sorry, I had trouble reaching the AI. Please verify the backend is running and try again.",
+        time: new Date(),
+      };
       setMessagesBySession((prev) => ({
         ...prev,
-        [activeSessionId]: [...(prev[activeSessionId] || []), errorMsg],
+        [currentSessionId]: [...(prev[currentSessionId] || []), errorMsg],
       }));
     } finally {
       setIsLoading(false);
@@ -59,33 +129,66 @@ const Chat = () => {
   };
 
   const handleNewSession = () => {
-    const nextId = sessions.length > 0 ? Math.max(...sessions.map(s => s.id)) + 1 : 1;
-    const newSession = { id: nextId, title: `Chat Session ${nextId}` };
-    setSessions([newSession, ...sessions]);
-    setActiveSessionId(nextId);
-    setMessagesBySession({
-      ...messagesBySession,
-      [nextId]: [
-        { sender: "assistant", content: "Hello! How can I assist you in your lab work today?", time: new Date() },
-      ],
-    });
+    // Switch to transient "new" session state instead of creating a DB record
+    setActiveSessionId("new");
   };
 
-  const activeMessages = messagesBySession[activeSessionId] || [];
+  const handleDeleteSession = async (sessionId) => {
+    try {
+      await deleteSession(sessionId);
+      
+      const updatedSessions = sessions.filter((s) => s.id !== sessionId);
+      setSessions(updatedSessions);
+
+      const updatedMessagesBySession = { ...messagesBySession };
+      delete updatedMessagesBySession[sessionId];
+      setMessagesBySession(updatedMessagesBySession);
+
+      if (activeSessionId === sessionId) {
+        // Go back to the transient new chat session
+        setActiveSessionId("new");
+      }
+    } catch (error) {
+      console.error(`Failed to delete session ${sessionId}:`, error);
+    }
+  };
+
+  // Determine which messages to show. If it's a transient session, show only the welcome greeting
+  const activeMessages = activeSessionId === "new"
+    ? [{ sender: "assistant", content: "Hi! How can I help you today?", time: new Date() }]
+    : (messagesBySession[activeSessionId] || []);
+
+  if (isInitialLoading) {
+    return (
+      <div className="chat-layout" style={{ justifyContent: "center", alignItems: "center", color: "var(--text-muted)" }}>
+        Loading sessions...
+      </div>
+    );
+  }
 
   return (
-    <div className="app-container">
-      <HistoryPanel
+    <div className="chat-layout">
+      <Sidebar
         sessions={sessions}
         activeSessionId={activeSessionId}
         onSelectSession={setActiveSessionId}
         onNewSession={handleNewSession}
+        onDeleteSession={handleDeleteSession}
+        onGoHome={onGoHome}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
       />
-      <ChatBox
-        messages={activeMessages}
-        onSendMessage={handleSendMessage}
-        isLoading={isLoading}
-      />
+      <div className="chat-main">
+        <Header 
+          onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} 
+          onGoHome={onGoHome}
+        />
+        <ChatWindow
+          messages={activeMessages}
+          onSendMessage={handleSendMessage}
+          isLoading={isLoading}
+        />
+      </div>
     </div>
   );
 };

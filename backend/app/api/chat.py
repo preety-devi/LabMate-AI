@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 
 from app.database.db import get_connection
 from app.services.chat_service import ChatService
@@ -26,14 +26,14 @@ class MessageCreate(BaseModel):
 class SessionResponse(BaseModel):
     id: int
     title: str
-    created_at: str
+    created_at: Optional[str] = None
 
 class MessageResponse(BaseModel):
     id: int
     session_id: int
     sender: str
     content: str
-    created_at: str
+    created_at: Optional[str] = None
 
 class ChatResponse(BaseModel):
     response: str
@@ -84,8 +84,8 @@ def create_session(session: SessionCreate):
 
     cursor.execute(
         """
-        INSERT INTO chat_messages(session_id, sender, content)
-        VALUES (?, ?, ?)
+        INSERT INTO chat_messages(session_id, sender, content, created_at)
+        VALUES (?, ?, ?, datetime('now'))
         """,
         (
             session_id,
@@ -189,8 +189,8 @@ def send_message(session_id: int, message: MessageCreate):
 
     # Save user message
     cursor.execute("""
-        INSERT INTO chat_messages(session_id, sender, content)
-        VALUES (?, ?, ?)
+        INSERT INTO chat_messages(session_id, sender, content, created_at)
+        VALUES (?, ?, ?, datetime('now'))
     """, (
         session_id,
         "user",
@@ -223,8 +223,8 @@ def send_message(session_id: int, message: MessageCreate):
 
     # Save AI response
     cursor.execute("""
-        INSERT INTO chat_messages(session_id, sender, content)
-        VALUES (?, ?, ?)
+        INSERT INTO chat_messages(session_id, sender, content, created_at)
+        VALUES (?, ?, ?, datetime('now'))
     """, (
         session_id,
         "assistant",
@@ -232,7 +232,7 @@ def send_message(session_id: int, message: MessageCreate):
     ))
 
     # Update title if still default
-    if session["title"] in ["New Chat", "New Chat Session"]:
+    if session["title"] in ["New Chat", "New Chat Session", "New Session"]:
 
         words = message.content.split()
 
@@ -254,3 +254,38 @@ def send_message(session_id: int, message: MessageCreate):
     conn.close()
 
     return ChatResponse(response=ai_response)
+
+
+# -------------------------
+# Delete Single Session
+# -------------------------
+
+@router.delete("/sessions/{session_id}")
+def delete_session(session_id: int):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT * FROM chat_sessions WHERE id=?",
+        (session_id,)
+    )
+
+    session = cursor.fetchone()
+
+    if session is None:
+        conn.close()
+        raise HTTPException(
+            status_code=404,
+            detail="Session not found"
+        )
+
+    cursor.execute(
+        "DELETE FROM chat_sessions WHERE id=?",
+        (session_id,)
+    )
+
+    conn.commit()
+    conn.close()
+
+    return {"message": f"Session {session_id} deleted."}
